@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transform Your Body in 90 Days | Level Up</title>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@400;600;700&family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* --- CSS VARIABLES & RESET --- */
+        :root {
+            --bg-color: #050505;
+            --surface: #121212;
+            --primary: #CCFF00; /* Neon Yellow/Green */
+            --primary-glow: rgba(204, 255, 0, 0.4);
+            --secondary: #00F0FF; /* Electric Blue */
+            --danger: #FF003C; /* Urgency Red */
+            --text-main: #FFFFFF;
+            --text-muted: #888888;
+            --font-display: 'Teko', sans-serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* --- TYPOGRAPHY & UTILITIES --- */
+        h1, h2, h3 { font-family: var(--font-display); text-transform: uppercase; line-height: 1; }
+        .text-primary { color: var(--primary); }
+        .text-danger { color: var(--danger); }
+        .section-title { font-size: 4rem; text-align: center; margin-bottom: 2rem; text-shadow: 0 0 20px rgba(255,255,255,0.1); }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: #000;
+            font-family: var(--font-display);
+            font-size: 2rem;
+            padding: 10px 40px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            text-transform: uppercase;
+            font-weight: 700;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: skewX(-10deg);
+        }
+        .btn span { display: inline-block; transform: skewX(10deg); }
+        .btn:hover {
+            background: #fff;
+            box-shadow: 0 0 30px var(--primary);
+            transform: skewX(-10deg) scale(1.05);
+        }
+        .btn-danger { background: var(--danger); color: white; box-shadow: 0 0 15px rgba(255,0,60,0.4); }
+        .btn-danger:hover { background: #fff; color: var(--danger); box-shadow: 0 0 30px var(--danger); }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: radial-gradient(circle at center, #1a1a1a 0%, var(--bg-color) 70%);
+            position: relative;
+            padding: 20px;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: 0;
+        }
+        .hero-content { z-index: 1; position: relative; }
+        .hero h1 { font-size: 6rem; letter-spacing: 2px; margin-bottom: 10px; animation: slideDown 1s ease-out; }
+        .hero p { font-size: 1.2rem; margin-bottom: 30px; color: var(--text-muted); animation: fadeIn 1.5s ease-out; }
+        
+        /* --- URGENCY BAR --- */
+        .urgency-bar {
+            background: var(--danger);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(255,0,60,0.5);
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* --- GAMIFIED QUIZ SECTION --- */
+        .quiz-section {
+            padding: 100px 20px;
+            background: var(--surface);
+            min-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 600px;
+            background: #000;
+            border: 2px solid #222;
+            padding: 40px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+            transition: width 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .quiz-step { display: none; text-align: center; animation: slideInRight 0.4s forwards; }
+        .quiz-step.active { display: block; }
+        .quiz-step h3 { font-size: 3rem; margin-bottom: 20px; }
+        
+        .quiz-options {
+            display: grid;
+            gap: 15px;
+        }
+        .quiz-card {
+            background: #111;
+            border: 2px solid #333;
+            padding: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 5px;
+        }
+        .quiz-card:hover {
+            border-color: var(--primary);
+            background: rgba(204, 255, 0, 0.1);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px var(--primary-glow);
+        }
+
+        /* --- TRANSFORMATION SHOWCASE --- */
+        .showcase {
+            padding: 100px 20px;
+            background: var(--bg-color);
+        }
+        .comparison-slider {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto;
+            background: #222;
+            border: 2px solid var(--primary);
+            overflow: hidden;
+            border-radius: 10px;
+        }
+        .comp-img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-size: cover; background-position: center;
+            display: flex; align-items: flex-end; padding: 20px; font-size: 2rem; font-family: var(--font-display);
+        }
+        .img-before { background-image: url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&q=80&w=800'); filter: grayscale(100%); }
+        .img-after { background-image: url('https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?auto=format&fit=crop&q=80&w=800'); color: var(--primary); width: 50%; border-right: 5px solid var(--primary); box-shadow: 5px 0 15px rgba(0,0,0,0.5); transition: width 0.1s; }
+        .slider-handle {
+            position: absolute;
+            top: 0; bottom: 0; left: 50%; width: 40px; margin-left: -20px;
+            cursor: ew-resize; z-index: 10; opacity: 0; /* Hidden but interactive */
+        }
+
+        /* --- PERSONAL PLAN GENERATOR (LEAD CAPTURE) --- */
+        .plan-generator {
+            padding: 100px 20px;
+            background: var(--surface);
+            text-align: center;
+        }
+        .locked-content {
+            position: relative;
+            max-width: 600px;
+            margin: 0 auto;
+            border: 1px solid #333;
+            border-radius: 10px;
+            overflow: hidden;
+            background: url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=800') center/cover;
+        }
+        .blur-layer {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            backdrop-filter: blur(15px);
+            background: rgba(0,0,0,0.7);
+            z-index: 1;
+        }
+        .lead-form {
+            position: relative;
+            z-index: 2;
+            padding: 50px 30px;
+        }
+        .lead-form h3 { font-size: 3rem; margin-bottom: 10px; color: var(--primary); }
+        .lead-form p { margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input {
+            width: 100%;
+            padding: 15px;
+            background: #111;
+            border: 1px solid #444;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            outline: none;
+            transition: border 0.3s;
+        }
+        .input-group input:focus { border-color: var(--primary); }
+        
+        /* --- SOCIAL PROOF --- */
+        .social-proof { padding: 80px 20px; text-align: center; background: var(--bg-color); }
+        .stats-container { display: flex; justify-content: center; gap: 50px; margin-bottom: 50px; flex-wrap: wrap; }
+        .stat-box h4 { font-size: 5rem; color: var(--secondary); margin-bottom: -10px; font-family: var(--font-display); }
+        .stat-box p { font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); }
+
+        /* --- FLOATING CTA SYSTEM --- */
+        .floating-cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 999;
+        }
+        .float-btn {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            text-decoration: none; font-size: 1.5rem; font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            transition: transform 0.3s;
+        }
+        .float-btn:hover { transform: scale(1.1); }
+        .bg-whatsapp { background: #25D366; color: white; }
+        .bg-call { background: var(--secondary); color: #000; }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInRight { from { opacity: 0; transform: translateX(50px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes pulseAlert { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        .pulse { animation: pulseAlert 2s infinite; }
+
+        @media(max-width: 768px) {
+            .hero h1 { font-size: 4rem; }
+            .section-title { font-size: 3rem; }
+            .comparison-slider { height: 300px; }
+            .stats-container { gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="urgency-bar">
+        <span class="pulse">🔴 LIVE:</span> 
+        <span>Special 90-Day Offer Closes In: <span id="countdown">14:59</span></span>
+        <span>|</span>
+        <span>Only <strong class="text-primary">3</strong> Slots Left</span>
+    </div>
+
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <h1>Transform Your Body<br><span class="text-primary">In 90 Days</span></h1>
+            <p>Stop watching others. Become the player. Level up your physique today.</p>
+            <a href="#quiz-start" class="btn"><span>START FREE QUIZ</span></a>
+        </div>
+    </section>
+
+    <section class="quiz-section" id="quiz-start">
+        <h2 class="section-title">Build Your <span class="text-primary">Character Profile</span></h2>
+        
+        <div class="quiz-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="quiz-progress"></div>
+            </div>
+
+            <div class="quiz-step active" id="step-1">
+                <h3>Select Primary Mission</h3>
+                <div class="quiz-options">
+                    <div class="quiz-card" onclick="nextStep(2, 33)">🔥 Shred Fat (Weight Loss)</div>
+                    <div class="quiz-card" onclick="nextStep(2, 33)">💪 Build Armor (Muscle Gain)</div>
+                    <div class="quiz-card" onclick="nextStep(2, 33)">⚡ Boost Stamina (General Fitness)</div>
+                </div>
+            </div>
+
+            <div class="quiz-step" id="step-2">
+                <h3>Current Weight Class</h3>
+                <div class="quiz-options">
+                    <div class="quiz-card" onclick="nextStep(3, 66)">Under 150 lbs (68 kg)</div>
+                    <div class="quiz-card" onclick="nextStep(3, 66)">150 - 200 lbs (68 - 90 kg)</div>
+                    <div class="quiz-card" onclick="nextStep(3, 66)">Over 200 lbs (90+ kg)</div>
+                </div>
+            </div>
+
+            <div class="quiz-step" id="step-3">
+                <h3>Daily Activity Level</h3>
+                <div class="quiz-options">
+                    <div class="quiz-card" onclick="finishQuiz()">🖥️ Desk Jockey (Sedentary)</div>
+                    <div class="quiz-card" onclick="finishQuiz()">🚶 Casual Walker (Lightly Active)</div>
+                    <div class="quiz-card" onclick="finishQuiz()">🏃 Athlete (Highly Active)</div>
+                </div>
+            </div>
+
+            <div class="quiz-step" id="step-loading">
+                <h3 class="text-secondary pulse">Generating Custom Protocol...</h3>
+                <p style="color: var(--text-muted)">Analyzing stats and building your 90-day roadmap.</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="showcase">
+        <h2 class="section-title">Real Players. <span class="text-primary">Real Results.</span></h2>
+        <div class="comparison-slider">
+            <div class="comp-img img-before">Day 1</div>
+            <div class="comp-img img-after" id="img-after">Day 90</div>
+            <input type="range" min="0" max="100" value="50" class="slider-handle" id="slider-handle">
+        </div>
+        <p style="text-align: center; margin-top: 15px; color: var(--text-muted);">Drag to reveal transformation</p>
+    </section>
+
+    <section class="plan-generator" id="unlock-plan">
+        <h2 class="section-title">Your Blueprint is <span class="text-danger">Locked</span></h2>
+        
+        <div class="locked-content">
+            <div class="blur-layer"></div>
+            <div class="lead-form">
+                <h3>PROTOCOL READY</h3>
+                <p>We've engineered your step-by-step 90-day plan. Enter your details to unblur and unlock your custom strategy immediately.</p>
+                <form id="lead-capture" onsubmit="unlockPlan(event)">
+                    <div class="input-group">
+                        <input type="text" placeholder="Player Name" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="email" placeholder="Email Address (Where we send the PDF)" required>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" placeholder="WhatsApp Number (For daily accountability)" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger" style="width: 100%; margin-top: 10px;"><span>UNLOCK MY PLAN NOW</span></button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <section class="social-proof">
+        <div class="stats-container">
+            <div class="stat-box">
+                <h4 id="counter-users">0</h4>
+                <p>Active Players</p>
+            </div>
+            <div class="stat-box">
+                <h4 id="counter-lbs">0</h4>
+                <p>Lbs Destroyed</p>
+            </div>
+            <div class="stat-box">
+                <h4>98%</h4>
+                <p>Success Rate</p>
+            </div>
+        </div>
+        <a href="#unlock-plan" class="btn"><span>CLAIM YOUR SPOT</span></a>
+    </section>
+
+    <div class="floating-cta">
+        <a href="#unlock-plan" class="float-btn bg-whatsapp" title="WhatsApp Us">W</a>
+        <a href="#unlock-plan" class="float-btn bg-call" title="Call Now">📞</a>
+    </div>
+
+    <script>
+        // --- QUIZ LOGIC ---
+        function nextStep(stepNumber, progressPercent) {
+            // Hide all steps
+            document.querySelectorAll('.quiz-step').forEach(el => el.classList.remove('active'));
+            // Update Progress bar
+            document.getElementById('quiz-progress').style.width = progressPercent + '%';
+            // Show next step
+            document.getElementById('step-' + stepNumber).classList.add('active');
+        }
+
+        function finishQuiz() {
+            document.querySelectorAll('.quiz-step').forEach(el => el.classList.remove('active'));
+            document.getElementById('quiz-progress').style.width = '100%';
+            document.getElementById('step-loading').classList.add('active');
+            
+            // Simulate processing time then scroll to lead capture
+            setTimeout(() => {
+                window.location.href = '#unlock-plan';
+            }, 2000);
+        }
+
+        // --- BEFORE/AFTER SLIDER LOGIC ---
+        const slider = document.getElementById('slider-handle');
+        const imgAfter = document.getElementById('img-after');
+        
+        slider.addEventListener('input', (e) => {
+            imgAfter.style.width = e.target.value + '%';
+        });
+
+        // --- FORM UNLOCK LOGIC (SIMULATION) ---
+        function unlockPlan(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.innerHTML = '<span>UNLOCKING...</span>';
+            btn.style.background = '#CCFF00';
+            btn.style.color = '#000';
+            
+            setTimeout(() => {
+                alert("Boom! Your plan has been unlocked and sent to your email/WhatsApp. (Demo Complete)");
+                btn.innerHTML = '<span>PLAN SENT!</span>';
+            }, 1500);
+        }
+
+        // --- COUNTDOWN TIMER ---
+        let time = 15 * 60; // 15 minutes
+        const countdownEl = document.getElementById('countdown');
+        
+        setInterval(() => {
+            const minutes = Math.floor(time / 60);
+            let seconds = time % 60;
+            seconds = seconds < 10 ? '0' + seconds : seconds;
+            countdownEl.innerHTML = `${minutes}:${seconds}`;
+            if(time > 0) time--;
+        }, 1000);
+
+        // --- ANIMATED COUNTERS ---
+        function animateValue(id, start, end, duration) {
+            if (start === end) return;
+            var range = end - start;
+            var current = start;
+            var increment = end > start? 1 : -1;
+            var stepTime = Math.abs(Math.floor(duration / range));
+            var obj = document.getElementById(id);
+            var timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current.toLocaleString() + "+";
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
+
+        // Trigger counters when scrolled into view
+        let counted = false;
+        window.addEventListener('scroll', () => {
+            const socialSection = document.querySelector('.social-proof');
+            const position = socialSection.getBoundingClientRect();
+            if(position.top < window.innerHeight && !counted) {
+                animateValue("counter-users", 1000, 1248, 2000);
+                animateValue("counter-lbs", 10000, 15420, 2500);
+                counted = true;
+            }
+        });
+    </script>
+</body>
+</html>
